@@ -8,6 +8,7 @@
 
 ```bash
 npm install --save react-jwt-kit
+yarn add react-jwt-kit
 ```
 
 ## Usage
@@ -27,4 +28,4 @@ class Example extends Component {
 
 ## License
 
-MIT © [wallforfry](https://github.com/wallforfry)
+GPL-3.0 © [wallforfry](https://github.com/wallforfry)
