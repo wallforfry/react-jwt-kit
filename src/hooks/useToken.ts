@@ -5,7 +5,7 @@ import Token from '../Token/Token'
 /**
  * Token Hook
  *
- * @returns - Token
+ * @returns {Token} Token
  */
 function useToken(): Token {
   const c = React.useContext(AuthContext)
