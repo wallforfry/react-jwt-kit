@@ -41,6 +41,10 @@ function useAuth(): AuthHookInterface {
     })
   }
 
+  const getUserClaims = () => {
+    return c.token.getUserClaims()
+  }
+
   return {
     signIn,
     signOut,
@@ -48,7 +52,8 @@ function useAuth(): AuthHookInterface {
     setRefreshToken,
     isAuthenticated,
     hasToRefreshAccessToken,
-    refreshToken
+    refreshToken,
+    getUserClaims
   }
 }
 

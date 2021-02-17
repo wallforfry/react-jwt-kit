@@ -14,6 +14,7 @@ export interface AuthHookInterface {
   isAuthenticated: () => boolean
   hasToRefreshAccessToken: () => boolean
   refreshToken: () => Promise<void>
+  getUserClaims: () => object
 }
 export interface AuthContextInterface {
   token: Token
