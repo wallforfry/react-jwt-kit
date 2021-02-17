@@ -49,9 +49,41 @@ const LoginButton = () => {
   )
 }
 
-export default function Routes() {
+const PrivateView = () => {
   const auth = useAuth()
   const token = useToken()
+
+  return (
+    <>
+      Private Route
+      <div>
+        <button onClick={() => auth.signOut()}>Logout</button>
+        <button
+          onClick={() =>
+            handleRefreshToken().then((accessToken) =>
+              auth.setAccessToken(accessToken)
+            )
+          }
+        >
+          Refresh
+        </button>
+        <p>isAccessTokenExpired : {token.isAccessTokenExpired().toString()}</p>
+        <p>
+          isRefreshTokenExpired : {token.isRefreshTokenExpired().toString()}
+        </p>
+        <p>isAuthenticated : {auth.isAuthenticated().toString()}</p>
+        <p>
+          hasToRefreshAccessToken : {auth.hasToRefreshAccessToken().toString()}
+        </p>
+        {auth.isAuthenticated() && (
+          <p>UserClaims : {JSON.stringify(token.getUserClaims())}</p>
+        )}
+      </div>
+    </>
+  )
+}
+
+export default function Routes() {
   return (
     <BrowserRouter>
       <div>
@@ -66,33 +98,7 @@ export default function Routes() {
         <LoginButton />
       </Route>
       <PrivateRoute loginPath='/login' path='/private' exact>
-        Private Route
-        <div>
-          <button onClick={() => auth.signOut()}>Logout</button>
-          <button
-            onClick={() =>
-              handleRefreshToken().then((accessToken) =>
-                auth.setAccessToken(accessToken)
-              )
-            }
-          >
-            Refresh
-          </button>
-          <p>
-            isAccessTokenExpired : {token.isAccessTokenExpired().toString()}
-          </p>
-          <p>
-            isRefreshTokenExpired : {token.isRefreshTokenExpired().toString()}
-          </p>
-          <p>isAuthenticated : {auth.isAuthenticated().toString()}</p>
-          <p>
-            hasToRefreshAccessToken :{' '}
-            {auth.hasToRefreshAccessToken().toString()}
-          </p>
-          {auth.isAuthenticated() && (
-            <p>UserClaims : {JSON.stringify(token.getUserClaims())}</p>
-          )}
-        </div>
+        <PrivateView />
       </PrivateRoute>
     </BrowserRouter>
   )
