@@ -34,7 +34,9 @@ class DummyToken extends Token {
 
 function testTokenClasses(token: Token) {
   it('Has default props', () => {
+    // @ts-ignore
     expect(token.accessTokenName).toEqual('_auth_t')
+    // @ts-ignore
     expect(token.refreshTokenName).toEqual('_refresh_t')
   })
 
@@ -63,18 +65,19 @@ function testTokenClasses(token: Token) {
   })
 
   it('isAccessTokenExpired (exp + 10mn)', () => {
-    const { stringToken } = generateToken(10)
+    const { stringToken, iat } = generateToken(10)
     token.setAccessToken(stringToken)
     const tokenExpiration = token.getAccessTokenExp()
-    expect(tokenExpiration > new Date()).toBeTruthy()
+    if (tokenExpiration)
+      expect(tokenExpiration.getTime() / 1000).toBeLessThan(iat)
   })
 
   it('isAccessTokenExpired (exp - 10mn)', () => {
-    const { stringToken } = generateToken(-10)
+    const { stringToken, iat } = generateToken(-10)
     token.setAccessToken(stringToken)
     const tokenExpiration = token.getAccessTokenExp()
-    console.debug(tokenExpiration, new Date())
-    expect(tokenExpiration < new Date()).toBeTruthy()
+    if (tokenExpiration)
+      expect(tokenExpiration.getTime() / 1000).toBeGreaterThan(iat)
   })
 
   it('Can setRefreshToken and getRefreshToken', () => {
@@ -92,17 +95,19 @@ function testTokenClasses(token: Token) {
   })
 
   it('isRefreshTokenExpired (exp + 10mn)', () => {
-    const { stringToken } = generateToken(10)
+    const { stringToken, iat } = generateToken(10)
     token.setRefreshToken(stringToken)
     const tokenExpiration = token.getRefreshTokenExp()
-    expect(tokenExpiration > new Date())
+    if (tokenExpiration)
+      expect(tokenExpiration.getTime() / 1000).toBeLessThan(iat)
   })
 
   it('isRefreshTokenExpired (exp - 10mn)', () => {
-    const { stringToken } = generateToken(-10)
+    const { stringToken, iat } = generateToken(-10)
     token.setRefreshToken(stringToken)
     const tokenExpiration = token.getRefreshTokenExp()
-    expect(tokenExpiration < new Date())
+    if (tokenExpiration)
+      expect(tokenExpiration.getTime() / 1000).toBeGreaterThan(iat)
   })
 }
 
