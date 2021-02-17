@@ -2,10 +2,21 @@ import React, { useEffect, useState } from 'react'
 import { Route, Redirect, RouteProps } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 
+/**
+ * @interface PrivateRouteProps
+ * @param {string} loginPath The Login route where redirect if not authenticated
+ */
 interface PrivateRouteProps {
+  /**
+   * The Login route where redirect if not authenticated
+   */
   loginPath: string
 }
 
+/**
+ * PrivateRoute Component
+ * @param {PrivateRouteProps & RouteProps} props
+ */
 function PrivateRoute(props: PrivateRouteProps & RouteProps) {
   const auth = useAuth()
 
