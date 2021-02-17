@@ -6,9 +6,7 @@ interface PrivateRouteProps {
   loginPath: string
 }
 
-const PrivateRoute: React.FunctionComponent<PrivateRouteProps & RouteProps> = (
-  props: PrivateRouteProps & RouteProps
-) => {
+function PrivateRoute(props: PrivateRouteProps & RouteProps) {
   const auth = useAuth()
 
   const {
@@ -61,9 +59,7 @@ interface AsyncComponentProps {
   promise: Promise<any>
   children: React.ReactNode
 }
-const AsyncComponent: React.FunctionComponent<AsyncComponentProps> = (
-  props: AsyncComponentProps
-) => {
+function AsyncComponent(props: AsyncComponentProps) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {

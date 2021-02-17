@@ -1,7 +1,6 @@
 import React from 'react'
 import CookieToken from '../Token/CookieToken'
 import { AuthContextInterface, AuthProviderProps } from '../interfaces'
-import Token from '../Token/Token'
 
 const AuthContext = React.createContext<AuthContextInterface>({
   token: new CookieToken({}),
@@ -14,11 +13,12 @@ const AuthProvider: React.FunctionComponent<AuthProviderProps> = (
   if (!props.tokenGenerator)
     throw new Error('No tokenGenerator specified in AuthProvider')
 
-  const [tokenState] = React.useState<Token>(props.tokenGenerator())
-
   return (
     <AuthContext.Provider
-      value={{ token: tokenState, fetchRefreshToken: props.fetchRefreshToken }}
+      value={{
+        token: props.tokenGenerator(),
+        fetchRefreshToken: props.fetchRefreshToken
+      }}
     >
       <React.Fragment>{props.children}</React.Fragment>
     </AuthContext.Provider>
