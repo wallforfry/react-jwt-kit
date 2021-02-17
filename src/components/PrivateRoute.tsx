@@ -38,6 +38,14 @@ const PrivateRoute: React.FunctionComponent<PrivateRouteProps & RouteProps> = (
           } else {
             return children
           }
+        } else if (auth.hasToRefreshAccessToken()) {
+          auth.refreshToken().then(() => {
+            if (render) {
+              return render(renderProps)
+            } else {
+              return children
+            }
+          })
         } else {
           return <Redirect to={loginPath} from='test' />
           // Le fetchRefreshToken doit être set dans AuthProvider pour être appelé ici
