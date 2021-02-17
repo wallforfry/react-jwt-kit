@@ -26,7 +26,3 @@ export interface AuthProviderProps {
   tokenGenerator?: () => Token
   fetchRefreshToken: () => Promise<string>
 }
-
-export interface SubAuthProviderProps {
-  children: React.ReactNode
-}

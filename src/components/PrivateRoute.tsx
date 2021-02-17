@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Route, Redirect, RouteProps } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 
@@ -36,21 +36,42 @@ const PrivateRoute: React.FunctionComponent<PrivateRouteProps & RouteProps> = (
           if (render) {
             return render(renderProps)
           } else {
-            return children
+            return <React.Fragment>{children}</React.Fragment>
           }
         } else if (auth.hasToRefreshAccessToken()) {
-          auth.refreshToken().then(() => {
-            if (render) {
-              return render(renderProps)
-            } else {
-              return children
-            }
-          })
+          return (
+            <AsyncComponent promise={auth.refreshToken()}>
+              <React.Fragment>
+                {render ? (
+                  render(renderProps)
+                ) : (
+                  <React.Fragment>{children}</React.Fragment>
+                )}
+              </React.Fragment>
+            </AsyncComponent>
+          )
         }
-        return <Redirect to={loginPath} from='test' />
+        return <Redirect to={loginPath} />
       }}
     />
   )
+}
+
+interface AsyncComponentProps {
+  promise: Promise<any>
+  children: React.ReactNode
+}
+const AsyncComponent: React.FunctionComponent<AsyncComponentProps> = (
+  props: AsyncComponentProps
+) => {
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    props.promise.finally(() => setIsLoading(false))
+  }, [props.promise])
+
+  if (isLoading) return <React.Fragment />
+  else return <React.Fragment>{props.children}</React.Fragment>
 }
 
 export default PrivateRoute

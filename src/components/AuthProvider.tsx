@@ -1,12 +1,7 @@
-import React, { useContext, useEffect } from 'react'
+import React from 'react'
 import CookieToken from '../Token/CookieToken'
-import {
-  AuthContextInterface,
-  AuthProviderProps,
-  SubAuthProviderProps
-} from '../interfaces'
+import { AuthContextInterface, AuthProviderProps } from '../interfaces'
 import Token from '../Token/Token'
-import { useAuth } from '..'
 
 const AuthContext = React.createContext<AuthContextInterface>({
   token: new CookieToken({}),
@@ -25,24 +20,13 @@ const AuthProvider: React.FunctionComponent<AuthProviderProps> = (
     <AuthContext.Provider
       value={{ token: tokenState, fetchRefreshToken: props.fetchRefreshToken }}
     >
-      <SubAuthProvider>{props.children}</SubAuthProvider>
+      <React.Fragment>{props.children}</React.Fragment>
     </AuthContext.Provider>
   )
 }
 
 AuthProvider.defaultProps = {
   tokenGenerator: () => new CookieToken({})
-}
-
-const SubAuthProvider = (props: SubAuthProviderProps) => {
-  const authContext = useContext(AuthContext)
-  const auth = useAuth()
-  useEffect(() => {
-    if (auth.hasToRefreshAccessToken()) {
-      auth.refreshToken()
-    }
-  }, [auth, authContext, auth.hasToRefreshAccessToken()])
-  return <React.Fragment>{props.children}</React.Fragment>
 }
 
 export default AuthProvider
