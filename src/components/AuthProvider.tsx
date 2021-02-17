@@ -37,9 +37,7 @@ AuthProvider.defaultProps = {
 const SubAuthProvider = (props: SubAuthProviderProps) => {
   const authContext = useContext(AuthContext)
   const auth = useAuth()
-  console.log('SubAuthProvider')
   useEffect(() => {
-    console.log(authContext)
     if (auth.hasToRefreshAccessToken()) {
       auth.refreshToken()
     }
