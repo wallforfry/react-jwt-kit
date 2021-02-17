@@ -46,10 +46,8 @@ const PrivateRoute: React.FunctionComponent<PrivateRouteProps & RouteProps> = (
               return children
             }
           })
-        } else {
-          return <Redirect to={loginPath} from='test' />
-          // Le fetchRefreshToken doit être set dans AuthProvider pour être appelé ici
         }
+        return <Redirect to={loginPath} from='test' />
       }}
     />
   )
