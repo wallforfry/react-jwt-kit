@@ -1,4 +1,4 @@
-import { AuthInterface, SignInInterface } from './../interfaces'
+import { AuthHookInterface, SignInInterface } from './../interfaces'
 import React from 'react'
 import { AuthContext } from '../components/AuthProvider'
 /**
@@ -6,7 +6,7 @@ import { AuthContext } from '../components/AuthProvider'
  *
  * @returns - AuthInterface
  */
-function useAuth(): AuthInterface {
+function useAuth(): AuthHookInterface {
   const c = React.useContext(AuthContext)
 
   const signIn = (params: SignInInterface) => {

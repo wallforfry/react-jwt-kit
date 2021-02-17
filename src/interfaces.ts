@@ -6,7 +6,7 @@ export interface SignInInterface {
   refreshToken: string
 }
 
-export interface AuthInterface {
+export interface AuthHookInterface {
   signIn: (params: SignInInterface) => void
   signOut: () => void
   setAccessToken: (newAccessToken: string) => void
