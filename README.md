@@ -15,14 +15,36 @@ yarn add react-jwt-kit
 
 ```tsx
 import React, { Component } from 'react'
+import { AuthProvider, CookieToken } from 'react-jwt-kit'
 
-import MyComponent from 'react-jwt-kit'
-import 'react-jwt-kit/dist/index.css'
+const handleRefreshToken = (): Promise<string> => {
+  return fetch('http://localhost:5000/api/v1/auth/refresh', {
+    method: 'POST',
+    credentials: 'include'
+  }).then((response) => {
+    if (response.status === 200) {
+      return response.json().then((data) => {
+        return data.accessToken
+      })
+    }
+    return undefined
+  })
+}
 
-class Example extends Component {
-  render() {
-    return <MyComponent />
-  }
+function App() {
+  return (
+    <AuthProvider
+      fetchRefreshToken={() => handleRefreshToken()}
+      tokenGenerator={() =>
+        new CookieToken({
+          cookieDomain: window.location.hostname,
+          cookieSecure: window.location.protocol === 'https:'
+        })
+      }
+    >
+      <Routes />
+    </AuthProvider>
+  )
 }
 ```
 
