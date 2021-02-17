@@ -1,6 +1,6 @@
 {
   "name": "react-jwt-kit",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Easily handle JWT auth in React app",
   "author": "wallforfry",
   "license": "GPL-3.0",
