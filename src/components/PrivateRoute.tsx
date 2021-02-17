@@ -28,20 +28,30 @@ function PrivateRoute(props: PrivateRouteProps & RouteProps) {
       exact={exact}
       sensitive={sensitive}
       strict={strict}
-      component={auth.isAuthenticated() ? component : undefined}
       render={(renderProps) => {
         if (auth.isAuthenticated()) {
-          if (render) {
-            return render(renderProps)
-          } else {
-            return <React.Fragment>{children}</React.Fragment>
+          if (component) {
+            return (
+              <React.Fragment>
+                {/* @ts-ignore */}
+                {React.createElement(component, renderProps)}
+              </React.Fragment>
+            )
+          } else if (render) {
+            return <React.Fragment>{render(renderProps)}</React.Fragment>
           }
+          return <React.Fragment>{children}</React.Fragment>
         } else if (auth.hasToRefreshAccessToken()) {
           return (
             <AsyncComponent promise={auth.refreshToken()}>
               <React.Fragment>
-                {render ? (
-                  render(renderProps)
+                {component ? (
+                  <React.Fragment>
+                    {/* @ts-ignore */}
+                    {React.createElement(component, renderProps)}
+                  </React.Fragment>
+                ) : render ? (
+                  <React.Fragment>{render(renderProps)}</React.Fragment>
                 ) : (
                   <React.Fragment>{children}</React.Fragment>
                 )}
@@ -58,6 +68,7 @@ function PrivateRoute(props: PrivateRouteProps & RouteProps) {
 interface AsyncComponentProps {
   promise: Promise<any>
   children: React.ReactNode
+  loader?: React.ReactNode
 }
 function AsyncComponent(props: AsyncComponentProps) {
   const [isLoading, setIsLoading] = useState(true)
@@ -66,7 +77,7 @@ function AsyncComponent(props: AsyncComponentProps) {
     props.promise.finally(() => setIsLoading(false))
   }, [props.promise])
 
-  if (isLoading) return <React.Fragment />
+  if (isLoading) return <React.Fragment>{props.loader ?? null}</React.Fragment>
   else return <React.Fragment>{props.children}</React.Fragment>
 }
 

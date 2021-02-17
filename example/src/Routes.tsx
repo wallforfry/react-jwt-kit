@@ -49,7 +49,7 @@ const LoginButton = () => {
   )
 }
 
-const PrivateView = () => {
+function PrivateView() {
   const auth = useAuth()
   const token = useToken()
 
@@ -88,7 +88,9 @@ export default function Routes() {
     <BrowserRouter>
       <div>
         <Link to='/login'>Login</Link> <Link to='/'>Home</Link>{' '}
-        <Link to='/private'>Private</Link>
+        <Link to='/private'>Private</Link>{' '}
+        <Link to='/private-component'>Private-Component</Link>{' '}
+        <Link to='/private-render'>Private-Render</Link>
       </div>
 
       <Route path='/' exact>
@@ -100,6 +102,18 @@ export default function Routes() {
       <PrivateRoute loginPath='/login' path='/private' exact>
         <PrivateView />
       </PrivateRoute>
+      <PrivateRoute
+        loginPath='/login'
+        path='/private-component'
+        exact
+        component={PrivateView}
+      />
+      <PrivateRoute
+        loginPath='/login'
+        path='/private-render'
+        exact
+        render={() => <PrivateView />}
+      />
     </BrowserRouter>
   )
 }
