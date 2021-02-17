@@ -1,4 +1,5 @@
 export interface TokenParamsInterface {
+  userClaimsName?: string
   accessTokenName?: string
   accessTokenExpName?: string
   refreshTokenName?: string
@@ -6,10 +7,12 @@ export interface TokenParamsInterface {
 }
 
 abstract class Token {
+  private readonly userClaimsName: string
   private readonly accessTokenName: string
   private readonly refreshTokenName: string
 
   constructor(props: TokenParamsInterface) {
+    this.userClaimsName = props?.userClaimsName ?? 'user_claims'
     this.accessTokenName = props?.accessTokenName ?? '_auth_t'
     this.refreshTokenName = props?.refreshTokenName ?? '_refresh_t'
   }
@@ -45,7 +48,7 @@ abstract class Token {
   getUserClaims(): any {
     const token = this.getAccessToken()
     if (!token) return undefined
-    return this.decodeToken(token)
+    return this.decodeToken(token)[this.userClaimsName]
   }
 
   isAccessTokenExpired(): boolean {
