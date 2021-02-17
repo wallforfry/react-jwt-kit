@@ -5,6 +5,7 @@ import CookieToken from './Token/CookieToken'
 import LocalStorageToken from './Token/LocalStorageToken'
 import AuthProvider from './components/AuthProvider'
 import RefreshComponent from './components/RefreshComponent'
+import PrivateRoute from './components/PrivateRoute'
 
 export {
   useAuth,
@@ -13,5 +14,6 @@ export {
   CookieToken,
   LocalStorageToken,
   AuthProvider,
-  RefreshComponent
+  RefreshComponent,
+  PrivateRoute
 }

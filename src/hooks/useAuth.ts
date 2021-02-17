@@ -1,20 +1,6 @@
+import { AuthInterface, SignInInterface } from './../interfaces'
 import React from 'react'
 import { AuthContext } from '../components/AuthProvider'
-
-interface SignInInterface {
-  accessToken: string
-  refreshToken: string
-}
-
-interface AuthInterface {
-  signIn: (params: SignInInterface) => void
-  signOut: () => void
-  setAccessToken: (newAccessToken: string) => void
-  setRefreshToken: (newRefreshToken: string) => void
-  isAuthenticated: () => boolean
-  hasToRefreshAccessToken: () => boolean
-}
-
 /**
  * Auth Hook
  *
@@ -49,13 +35,20 @@ function useAuth(): AuthInterface {
     return c.token.isAccessTokenExpired() && !c.token.isRefreshTokenExpired()
   }
 
+  const refreshToken = () => {
+    return c.fetchRefreshToken().then((accessToken: string) => {
+      setAccessToken(accessToken)
+    })
+  }
+
   return {
     signIn,
     signOut,
     setAccessToken,
     setRefreshToken,
     isAuthenticated,
-    hasToRefreshAccessToken
+    hasToRefreshAccessToken,
+    refreshToken
   }
 }
 

@@ -64,6 +64,8 @@
     "dist"
   ],
   "dependencies": {
-    "js-cookie": "^2.2.1"
+    "@types/react-router-dom": "^5.1.7",
+    "js-cookie": "^2.2.1",
+    "react-router-dom": "^5.2.0"
   }
 }
