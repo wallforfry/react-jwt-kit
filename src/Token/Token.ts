@@ -1,8 +1,8 @@
 /**
  * @interface TokenParamsInterface
- * @param userClaimsName - The name of the user claims field in Access Token
- * @param accessTokenName - The AccessToken storage name
- * @param refreshTokenName - The RefreshToken storage name
+ * @param userClaimsName The name of the user claims field in Access Token
+ * @param accessTokenName The AccessToken storage name
+ * @param refreshTokenName The RefreshToken storage name
  */
 export interface TokenParamsInterface {
   /**
