@@ -1,10 +1,6 @@
 import React from 'react'
 
-import {
-  AuthProvider,
-  CookieToken,
-  // RefreshComponent
-} from 'react-jwt-kit'
+import { AuthProvider, CookieToken } from 'react-jwt-kit'
 import 'react-jwt-kit/dist/index.css'
 import Routes from './Routes'
 
