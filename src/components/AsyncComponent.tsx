@@ -4,17 +4,29 @@ import React, { useEffect, useState } from 'react'
 interface AsyncComponentProps {
   promise: Promise<any>
   children: React.ReactNode
-  loader?: React.ReactNode
+  loaderComponent?: React.ReactNode
+  errorComponent?: React.ReactNode
 }
 function AsyncComponent(props: AsyncComponentProps) {
   const [isLoading, setIsLoading] = useState(true)
+  const [hasError, setHasError] = useState(false)
 
   useEffect(() => {
-    props.promise.finally(() => setIsLoading(false))
+    props.promise
+      .catch(() => setHasError(true))
+      .finally(() => setIsLoading(false))
   }, [props.promise])
 
-  if (isLoading) return <React.Fragment>{props.loader ?? null}</React.Fragment>
-  else return <React.Fragment>{props.children}</React.Fragment>
+  if (hasError)
+    return (
+      <React.Fragment>
+        {props.errorComponent ?? 'Error loading AsyncComponent'}
+      </React.Fragment>
+    )
+  else if (isLoading)
+    return <React.Fragment>{props.loaderComponent ?? null}</React.Fragment>
+
+  return <React.Fragment>{props.children}</React.Fragment>
 }
 
 export default AsyncComponent
