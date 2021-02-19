@@ -1,7 +1,6 @@
 import React from 'react'
 
 import { AuthProvider, CookieToken } from 'react-jwt-kit'
-import 'react-jwt-kit/dist/index.css'
 import Routes from './Routes'
 
 const handleRefreshToken = (): Promise<string> => {
