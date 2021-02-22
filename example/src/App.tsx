@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { AuthProvider, CookieToken } from 'react-jwt-kit'
+import { CookieToken, AuthProvider } from 'react-jwt-kit'
+import { BrowserRouter } from 'react-router-dom'
 import Routes from './Routes'
 
 const handleRefreshToken = (): Promise<string> => {
@@ -16,18 +17,15 @@ const handleRefreshToken = (): Promise<string> => {
     return undefined
   })
 }
+
+const token = new CookieToken({ fetchRefreshToken: () => handleRefreshToken() })
+
 const App = () => {
   return (
-    <AuthProvider
-      fetchRefreshToken={() => handleRefreshToken()}
-      tokenGenerator={() =>
-        new CookieToken({
-          cookieDomain: window.location.hostname,
-          cookieSecure: window.location.protocol === 'https:'
-        })
-      }
-    >
-      <Routes />
+    <AuthProvider token={token}>
+      <BrowserRouter>
+        <Routes />
+      </BrowserRouter>
     </AuthProvider>
   )
 }

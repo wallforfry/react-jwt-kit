@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter, Link, Route, useHistory } from 'react-router-dom'
+import { Link, Route, Switch, useHistory } from 'react-router-dom'
 import { PrivateRoute, useAuth, useToken } from 'react-jwt-kit'
 
 const handleLogin = (auth: any): Promise<void> => {
@@ -23,97 +23,98 @@ const handleLogin = (auth: any): Promise<void> => {
   )
 }
 
-const handleRefreshToken = (): Promise<string> => {
-  return fetch('http://localhost:5000/api/v1/auth/refresh', {
-    method: 'POST',
-    credentials: 'include'
-  }).then((response) => {
-    if (response.status === 200) {
-      return response.json().then((data) => {
-        return data.accessToken
-      })
-    }
-    return undefined
-  })
-}
-
 const LoginButton = () => {
   const history = useHistory()
   const auth = useAuth()
   return (
-    <button
-      onClick={() => handleLogin(auth).then(() => history.push('/private'))}
-    >
-      Login
-    </button>
+    <>
+      <button
+        onClick={() => handleLogin(auth).then(() => history.push('/private'))}
+      >
+        Login
+      </button>
+      <button onClick={() => auth.signOut()}>Logout</button>
+      <button onClick={() => auth.refreshToken()}>Refresh</button>
+      <button onClick={() => auth.getUserClaims()}>Sync</button>
+    </>
   )
 }
 
 function PrivateView() {
-  const auth = useAuth()
   const token = useToken()
+  const history = useHistory()
 
+  const isAuthenticated = token.isAuthenticated()
+
+  const isAccessTokenExpired = token.isAccessTokenExpired()
+
+  const isRefreshTokenExpired = token.isRefreshTokenExpired()
+
+  const hasToRefreshAccessToken = token.hasToRefreshAccessToken()
+
+  const userClaims = token.getUserClaims()
+
+  console.debug('Welcome From PrivateView')
   return (
     <>
-      Private Route
+      Private Route : {history.location.pathname}
       <div>
-        <button onClick={() => auth.signOut()}>Logout</button>
-        <button
-          onClick={() =>
-            handleRefreshToken().then((accessToken) =>
-              auth.setAccessToken(accessToken)
-            )
-          }
-        >
-          Refresh
-        </button>
-        <p>isAccessTokenExpired : {token.isAccessTokenExpired().toString()}</p>
-        <p>
-          isRefreshTokenExpired : {token.isRefreshTokenExpired().toString()}
-        </p>
-        <p>isAuthenticated : {auth.isAuthenticated().toString()}</p>
-        <p>
-          hasToRefreshAccessToken : {auth.hasToRefreshAccessToken().toString()}
-        </p>
-        {auth.isAuthenticated() && (
-          <p>UserClaims : {JSON.stringify(token.getUserClaims())}</p>
-        )}
+        <p>isAccessTokenExpired : {isAccessTokenExpired.toString()}</p>
+        <p>isRefreshTokenExpired : {isRefreshTokenExpired.toString()}</p>
+        <p>isAuthenticated : {isAuthenticated.toString()}</p>
+        <p>hasToRefreshAccessToken : {hasToRefreshAccessToken.toString()}</p>
+        {isAuthenticated && <p>UserClaims : {JSON.stringify(userClaims)}</p>}
       </div>
     </>
   )
 }
 
 export default function Routes() {
+  const token = useToken()
+
   return (
-    <BrowserRouter>
+    <>
       <div>
         <Link to='/login'>Login</Link> <Link to='/'>Home</Link>{' '}
         <Link to='/private'>Private</Link>{' '}
         <Link to='/private-component'>Private-Component</Link>{' '}
         <Link to='/private-render'>Private-Render</Link>
+        <br />
+        <LoginButton />
+        <br />
+        <p>accessToken : {(token.getAccessToken() !== undefined).toString()}</p>
+        <p>
+          refreshToken : {(token.getRefreshToken() !== undefined).toString()}
+        </p>
+        <button onClick={() => console.debug(token.getAccessToken())}>
+          Test
+        </button>
+        <br />
       </div>
 
-      <Route path='/' exact>
-        Public Route
-      </Route>
-      <Route path='/login'>
-        <LoginButton />
-      </Route>
-      <PrivateRoute loginPath='/login' path='/private' exact>
-        <PrivateView />
-      </PrivateRoute>
-      <PrivateRoute
-        loginPath='/login'
-        path='/private-component'
-        exact
-        component={PrivateView}
-      />
-      <PrivateRoute
-        loginPath='/login'
-        path='/private-render'
-        exact
-        render={() => <PrivateView />}
-      />
-    </BrowserRouter>
+      <Switch>
+        <Route path='/' exact>
+          Public Route
+        </Route>
+        <Route path='/login'>
+          <LoginButton />
+        </Route>
+        <PrivateRoute loginPath='/login' path='/private' exact>
+          <PrivateView />
+        </PrivateRoute>
+        <PrivateRoute
+          loginPath='/login'
+          path='/private-component'
+          exact
+          component={PrivateView}
+        />
+        <PrivateRoute
+          loginPath='/login'
+          path='/private-render'
+          exact
+          render={() => <PrivateView />}
+        />
+      </Switch>
+    </>
   )
 }
