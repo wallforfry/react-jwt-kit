@@ -1,5 +1,4 @@
-import React from 'react'
-import { AuthContext } from '../components/AuthProvider'
+import { useAuthContext } from '../components/AuthContext'
 import Token from '../Token/Token'
 
 /**
@@ -8,9 +7,9 @@ import Token from '../Token/Token'
  * @returns {Token} Token
  */
 function useToken(): Token {
-  const c = React.useContext(AuthContext)
+  const c = useAuthContext()
 
-  return c.token
+  return c[0]
 }
 
 export default useToken

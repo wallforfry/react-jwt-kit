@@ -1,6 +1,5 @@
 import { AuthHookInterface, SignInInterface } from './../interfaces'
-import React from 'react'
-import { AuthContext } from '../components/AuthProvider'
+import { useAuthContext } from '../components/AuthContext'
 
 /**
  * Auth Hook
@@ -8,73 +7,63 @@ import { AuthContext } from '../components/AuthProvider'
  * @returns {AuthInterface} AuthInterface
  */
 function useAuth(): AuthHookInterface {
-  const c = React.useContext(AuthContext)
+  const [authContext, dispatch] = useAuthContext()
 
   /**
    * @inheritdoc `AuthHookInterface.signIn`
    */
   const signIn = (params: SignInInterface) => {
-    if (params.accessToken) c.token.setAccessToken(params.accessToken)
-    if (params.refreshToken) c.token.setRefreshToken(params.refreshToken)
+    dispatch({ type: 'LOGIN_SUCCESS', payload: params })
   }
 
   /**
    * @inheritdoc `AuthHookInterface.signOut`
    */
   const signOut = () => {
-    c.token.unsetAccessToken()
-    c.token.unsetRefreshToken()
-  }
-
-  /**
-   * @inheritdoc `AuthHookInterface.setAccessToken`
-   */
-  const setAccessToken = (newAccessToken: string) => {
-    if (newAccessToken) c.token.setAccessToken(newAccessToken)
-  }
-
-  /**
-   * @inheritdoc `AuthHookInterface.setRefreshToken`
-   */
-  const setRefreshToken = (newRefreshToken: string) => {
-    if (newRefreshToken) c.token.setRefreshToken(newRefreshToken)
+    dispatch({ type: 'LOGOUT_SUCCESS' })
   }
 
   /**
    * @inheritdoc `AuthHookInterface.isAuthenticated`
    */
   const isAuthenticated = () => {
-    return !c.token.isAccessTokenExpired()
+    return authContext.isAuthenticated()
   }
 
   /**
    * @inheritdoc `AuthHookInterface.hasToRefreshToken`
    */
   const hasToRefreshAccessToken = () => {
-    return c.token.isAccessTokenExpired() && !c.token.isRefreshTokenExpired()
+    return authContext.hasToRefreshAccessToken()
   }
 
   /**
    * @inheritdoc `AuthHookInterface.refreshToken`
    */
-  const refreshToken = () => {
-    return c.fetchRefreshToken().then((accessToken: string) => {
-      setAccessToken(accessToken)
-    })
+  const refreshToken = (): Promise<boolean> => {
+    dispatch({ type: 'REFRESH_TOKEN_REQUEST' })
+    return authContext
+      .fetchRefreshToken()
+      .then((newAccessToken: string) => {
+        dispatch({ type: 'REFRESH_TOKEN_SUCCESS', newAccessToken })
+        return true
+      })
+      .catch(() => {
+        dispatch({ type: 'REFRESH_TOKEN_ERROR' })
+        return false
+      })
   }
 
   /**
    * @inheritdoc `AuthHookInterface.getUserClaims`
    */
   const getUserClaims = () => {
-    return c.token.getUserClaims()
+    return authContext.getUserClaims()
   }
 
   return {
     signIn,
     signOut,
-    setAccessToken,
-    setRefreshToken,
     isAuthenticated,
     hasToRefreshAccessToken,
     refreshToken,
