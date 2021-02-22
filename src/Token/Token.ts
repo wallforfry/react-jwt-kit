@@ -20,6 +20,11 @@ export interface TokenParamsInterface {
    * @defaultValue `_refresh_t`
    */
   refreshTokenName?: string
+  /**
+   * Function that return new AccessToken as Promise\<string\>
+   * @returns {Promise<string>} Promise\<string\> of the new Access Token
+   */
+  fetchRefreshToken?: () => Promise<string>
 }
 
 /**
@@ -45,43 +50,111 @@ abstract class Token {
   private readonly refreshTokenName: string
 
   /**
+   * Function that return new AccessToken as Promise\<string\>
+   * @returns {Promise<string>} Promise\<string\> of the new Access Token
+   */
+  public readonly fetchRefreshToken: () => Promise<string>
+
+  // @ts-ignore
+  private accessToken: string | undefined
+  // @ts-ignore
+  private refreshToken: string | undefined
+
+  /**
    * {@inheritdoc TokenParamsInterface}
    */
   constructor(props: TokenParamsInterface) {
     this.userClaimsName = props?.userClaimsName ?? 'user_claims'
     this.accessTokenName = props?.accessTokenName ?? '_auth_t'
     this.refreshTokenName = props?.refreshTokenName ?? '_refresh_t'
+    if (!props?.fetchRefreshToken)
+      throw new Error('Token require fetchRefreshToken props')
+    this.fetchRefreshToken = props.fetchRefreshToken
   }
 
   /**
    * Set the Access Token from storage
    * @param token - AccessToken as string
+   * @virtual
    */
-  abstract setAccessToken(token: string): void
+  setAccessToken(token: string) {
+    this.accessToken = token
+    this._setAccessToken(token)
+  }
+
   /**
    * Get the Access Token from storage
    * @returns {string|undefined} The stored Access Token
    */
-  abstract getAccessToken(): string | undefined
+  getAccessToken() {
+    this.accessToken = this._getAccessToken()
+    return this.accessToken
+  }
+
   /**
    * Remove the Access Token from storage
    */
-  abstract unsetAccessToken(): void
+  unsetAccessToken() {
+    this.accessToken = undefined
+    this._unsetAccessToken()
+  }
 
   /**
    * Set the Refresh Token from storage
    * @param refreshToken - RefreshToken as string
    */
-  abstract setRefreshToken(refreshToken: string): void
+  setRefreshToken(refreshToken: string) {
+    this.refreshToken = refreshToken
+    this._setRefreshToken(refreshToken)
+  }
+
   /**
    * Get the Refresh Token from storage
    * @returns {string|undefined} The stored Refresh Token
    */
-  abstract getRefreshToken(): string | undefined
+  getRefreshToken() {
+    this.refreshToken = this._getRefreshToken()
+    return this.refreshToken
+  }
+
   /**
    * Remove the Refresh Token from storage
    */
-  abstract unsetRefreshToken(): void
+  unsetRefreshToken() {
+    this.refreshToken = undefined
+    this._unsetRefreshToken()
+  }
+
+  /**
+   * Set the Access Token from storage
+   * @param token - AccessToken as string
+   * @virtual
+   */
+  protected abstract _setAccessToken(token: string): void
+  /**
+   * Get the Access Token from storage
+   * @returns {string|undefined} The stored Access Token
+   */
+  protected abstract _getAccessToken(): string | undefined
+  /**
+   * Remove the Access Token from storage
+   */
+  protected abstract _unsetAccessToken(): void
+
+  /**
+   * Set the Refresh Token from storage
+   * @param refreshToken - RefreshToken as string
+   */
+  protected abstract _setRefreshToken(refreshToken: string): void
+  /**
+   * Get the Refresh Token from storage
+   * @returns {string|undefined} The stored Refresh Token
+   */
+  protected abstract _getRefreshToken(): string | undefined
+  /**
+   * Remove the Refresh Token from storage
+   */
+  protected abstract _unsetRefreshToken(): void
 
   /**
    * Get the Access Token storage name
@@ -147,6 +220,22 @@ abstract class Token {
     const exp = this.getRefreshTokenExp()
     if (!exp) return true
     return this.dateTimeDiffInMinutes(new Date(), exp) <= 0
+  }
+
+  /**
+   * Check if the user is authenticated
+   * @returns {boolean} true if the user is authenticated
+   */
+  isAuthenticated(): boolean {
+    return !this.isAccessTokenExpired()
+  }
+
+  /**
+   * Check if Access Token is expired but Refresh Token still valid
+   * @returns {boolean} true Access Token expired and Refresh Token not
+   */
+  hasToRefreshAccessToken(): boolean {
+    return this.isAccessTokenExpired() && !this.isRefreshTokenExpired()
   }
 
   /**
