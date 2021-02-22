@@ -15,7 +15,8 @@ yarn add react-jwt-kit
 
 ```tsx
 import React, { Component } from 'react'
-import { AuthProvider, CookieToken } from 'react-jwt-kit'
+import { AuthProvider, CookieToken, useAuth, PrivateRoute } from 'react-jwt-kit'
+import { BrowserRouter, Switch, Route } from 'react-router-dom'
 
 const handleRefreshToken = (): Promise<string> => {
   return fetch('http://localhost:5000/api/v1/auth/refresh', {
@@ -31,19 +32,58 @@ const handleRefreshToken = (): Promise<string> => {
   })
 }
 
+const handleLogin = (auth: any): Promise<void> => {
+  return new Promise<void>((resolve) =>
+    fetch('http://localhost:5000/api/v1/auth/login', {
+      method: 'POST',
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({
+        username: 'username',
+        password: 'password'
+      })
+    }).then((response) => {
+      response.json().then((data) => {
+        auth.signIn({
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken
+        })
+        resolve()
+      })
+    })
+  )
+}
+
+const token = new CookieToken({ fetchRefreshToken: () => handleRefreshToken() })
+
 function App() {
   return (
-    <AuthProvider
-      fetchRefreshToken={() => handleRefreshToken()}
-      tokenGenerator={() =>
-        new CookieToken({
-          cookieDomain: window.location.hostname,
-          cookieSecure: window.location.protocol === 'https:'
-        })
-      }
-    >
-      <Routes />
+    <AuthProvider token={token}>
+      <BrowserRouter>
+        <Switch>
+          <Route path='/login'>
+            <LoginButton />
+          </Route>
+          <PrivateRoute path='/private' loginPath='/login'>
+            Private
+          </PrivateRoute>
+        </Switch>
+      </BrowserRouter>
     </AuthProvider>
+  )
+}
+
+const LoginButton = () => {
+  const history = useHistory()
+  const auth = useAuth()
+  return (
+    <>
+      <button
+        onClick={() => handleLogin(auth).then(() => history.push('/private'))}
+      >
+        Login
+      </button>
+      <button onClick={() => auth.signOut()}>Logout</button>
+    </>
   )
 }
 ```
