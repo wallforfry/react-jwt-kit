@@ -54,7 +54,6 @@ function PrivateView() {
 
   const userClaims = token.getUserClaims()
 
-  console.debug('Welcome From PrivateView')
   return (
     <>
       Private Route : {history.location.pathname}
