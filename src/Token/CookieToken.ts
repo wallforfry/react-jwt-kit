@@ -38,7 +38,7 @@ class CookieToken extends Token {
    * Set the Access Token from storage
    * @param token - AccessToken as string
    */
-  _setAccessToken(token: string): void {
+  setAccessToken(token: string): void {
     Cookies.set(this.getAccessTokenName(), token, {
       expires: this.getTokenExp(token),
       domain: this.cookieDomain,
@@ -50,14 +50,14 @@ class CookieToken extends Token {
    * Get the Access Token from storage
    * @returns {string|undefined} The stored Access Token
    */
-  _getAccessToken(): string | undefined {
+  getAccessToken(): string | undefined {
     return Cookies.get(this.getAccessTokenName())
   }
 
   /**
    * Remove the Access Token from storage
    */
-  _unsetAccessToken(): void {
+  unsetAccessToken(): void {
     Cookies.remove(this.getAccessTokenName(), {
       domain: this.cookieDomain,
       secure: false
@@ -68,7 +68,7 @@ class CookieToken extends Token {
    * Set the Refresh Token from storage
    * @param refreshToken - RefreshToken as string
    */
-  _setRefreshToken(refreshToken: string): void {
+  setRefreshToken(refreshToken: string): void {
     Cookies.set(this.getRefreshTokenName(), refreshToken, {
       expires: this.getTokenExp(refreshToken),
       domain: this.cookieDomain,
@@ -80,14 +80,14 @@ class CookieToken extends Token {
    * Get the Refresh Token from storage
    * @returns {string|undefined} The stored Refresh Token
    */
-  _getRefreshToken(): string | undefined {
+  getRefreshToken(): string | undefined {
     return Cookies.get(this.getRefreshTokenName())
   }
 
   /**
    * Remove the Refresh Token from storage
    */
-  _unsetRefreshToken(): void {
+  unsetRefreshToken(): void {
     Cookies.remove(this.getRefreshTokenName(), {
       domain: this.cookieDomain,
       secure: this.cookieSecure

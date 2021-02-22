@@ -55,11 +55,6 @@ abstract class Token {
    */
   public readonly fetchRefreshToken: () => Promise<string>
 
-  // @ts-ignore
-  private accessToken: string | undefined
-  // @ts-ignore
-  private refreshToken: string | undefined
-
   /**
    * {@inheritdoc TokenParamsInterface}
    */
@@ -77,84 +72,31 @@ abstract class Token {
    * @param token - AccessToken as string
    * @virtual
    */
-  setAccessToken(token: string) {
-    this.accessToken = token
-    this._setAccessToken(token)
-  }
-
+  abstract setAccessToken(token: string): void
   /**
    * Get the Access Token from storage
    * @returns {string|undefined} The stored Access Token
    */
-  getAccessToken() {
-    this.accessToken = this._getAccessToken()
-    return this.accessToken
-  }
-
+  abstract getAccessToken(): string | undefined
   /**
    * Remove the Access Token from storage
    */
-  unsetAccessToken() {
-    this.accessToken = undefined
-    this._unsetAccessToken()
-  }
+  abstract unsetAccessToken(): void
 
   /**
    * Set the Refresh Token from storage
    * @param refreshToken - RefreshToken as string
    */
-  setRefreshToken(refreshToken: string) {
-    this.refreshToken = refreshToken
-    this._setRefreshToken(refreshToken)
-  }
-
+  abstract setRefreshToken(refreshToken: string): void
   /**
    * Get the Refresh Token from storage
    * @returns {string|undefined} The stored Refresh Token
    */
-  getRefreshToken() {
-    this.refreshToken = this._getRefreshToken()
-    return this.refreshToken
-  }
-
+  abstract getRefreshToken(): string | undefined
   /**
    * Remove the Refresh Token from storage
    */
-  unsetRefreshToken() {
-    this.refreshToken = undefined
-    this._unsetRefreshToken()
-  }
-
-  /**
-   * Set the Access Token from storage
-   * @param token - AccessToken as string
-   * @virtual
-   */
-  protected abstract _setAccessToken(token: string): void
-  /**
-   * Get the Access Token from storage
-   * @returns {string|undefined} The stored Access Token
-   */
-  protected abstract _getAccessToken(): string | undefined
-  /**
-   * Remove the Access Token from storage
-   */
-  protected abstract _unsetAccessToken(): void
-
-  /**
-   * Set the Refresh Token from storage
-   * @param refreshToken - RefreshToken as string
-   */
-  protected abstract _setRefreshToken(refreshToken: string): void
-  /**
-   * Get the Refresh Token from storage
-   * @returns {string|undefined} The stored Refresh Token
-   */
-  protected abstract _getRefreshToken(): string | undefined
-  /**
-   * Remove the Refresh Token from storage
-   */
-  protected abstract _unsetRefreshToken(): void
+  abstract unsetRefreshToken(): void
 
   /**
    * Get the Access Token storage name
