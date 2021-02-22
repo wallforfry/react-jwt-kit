@@ -1,6 +1,6 @@
 import React from 'react'
 import Token from './Token/Token'
-
+import { ACTIONTYPE } from './store/AuthReducer'
 /**
  * Interface for the useAuth SignIn function
  * @interface SignInInterface
@@ -22,8 +22,6 @@ export interface SignInInterface {
  * @interface AuthHookInterface
  * @param signIn SignIn function
  * @param signOut SignOut function
- * @param setAccessToken Function to set the Access Token
- * @param setRefreshToken Function to set the Refresh Token
  * @param isAuthenticated Function to check if user is authenticated
  * @param hasToRefreshAccessToken Function to check if Access Token is expired but Refresh Token is still valid
  * @param refreshToken Function that trigger the Access Token refresh with Refresh Token
@@ -40,16 +38,6 @@ export interface AuthHookInterface {
    */
   signOut: () => void
   /**
-   * Set the Access Token
-   * @param {string} newAccessToken
-   */
-  setAccessToken: (newAccessToken: string) => void
-  /**
-   * Set the Refresh Token
-   * @param {string} newRefreshToken
-   */
-  setRefreshToken: (newRefreshToken: string) => void
-  /**
    * Check if user is authenticated
    * @returns {boolean} true if the user is authenticated
    */
@@ -61,9 +49,9 @@ export interface AuthHookInterface {
   hasToRefreshAccessToken: () => boolean
   /**
    * Trigger the Access Token refresh with Refresh Token
-   * @returns {Promise<void>} Promise\<void\> When the token is refreshed
+   * @returns {Promise<boolean>} Promise\<boolean\> true if the token is refreshed
    */
-  refreshToken: () => Promise<void>
+  refreshToken: () => Promise<boolean>
   /**
    * Get user claims from Access Token
    * @returns {object} The user claims stored is Access Token payload
@@ -71,39 +59,20 @@ export interface AuthHookInterface {
   getUserClaims: () => object
 }
 
-/**
- * @interface AuthContextInterface
- * @param {token} token Token object
- * @param fetchRefreshToken Function that return new AccessToken as Promise\<string\>
- */
-export interface AuthContextInterface {
-  /**
-   * Token object
-   */
-  token: Token
-  /**
-   * Function that return new AccessToken as Promise\<string\>
-   * @returns {Promise<string>} Promise\<string\> of the new Access Token
-   */
-  fetchRefreshToken: () => Promise<string>
-}
+export type AuthContextType = [Token, React.Dispatch<ACTIONTYPE>]
 
 /**
  * @interface AuthProviderProps
- * @param children Children component
- * @param tokenGenerator Function that return a subclass of Token
- * @param fetchRefreshToken Function that return new AccessToken as Promise\<string\>
+ * @param token Function that return a subclass of Token
  */
 export interface AuthProviderProps {
-  children: React.ReactNode
   /**
    * Function that return a subclass of Token
    * @returns {Token} Token subclass
    */
-  tokenGenerator?: () => Token
-  /**
-   * Function that return new AccessToken as Promise\<string\>
-   * @returns {Promise<string>} Promise\<string\> of the new Access Token
-   */
-  fetchRefreshToken: () => Promise<string>
+  token: Token
+}
+export interface SyncTokensInterface {
+  accessToken?: string
+  refreshToken?: string
 }
