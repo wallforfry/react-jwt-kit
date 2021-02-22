@@ -2,35 +2,7 @@ import Token from './Token'
 import LocalStorageToken from './LocalStorageToken'
 import CookieToken from './CookieToken'
 import generateToken from '../test.utils'
-
-class DummyToken extends Token {
-  accessToken: undefined | string
-  refreshToken: undefined | string
-
-  setAccessToken(token: string): void {
-    this.accessToken = token
-  }
-
-  getAccessToken(): string | undefined {
-    return this.accessToken
-  }
-
-  unsetAccessToken(): void {
-    this.accessToken = undefined
-  }
-
-  setRefreshToken(refreshToken: string): void {
-    this.refreshToken = refreshToken
-  }
-
-  getRefreshToken(): string | undefined {
-    return this.refreshToken
-  }
-
-  unsetRefreshToken(): void {
-    this.refreshToken = undefined
-  }
-}
+import DummyToken from './DummyToken'
 
 function testTokenClasses(token: Token) {
   it('Has default props', () => {
@@ -112,16 +84,18 @@ function testTokenClasses(token: Token) {
 }
 
 describe('Test DummyToken', () => {
-  const dummyToken = new DummyToken({})
+  const dummyToken = new DummyToken({ fetchRefreshToken: async () => '' })
   testTokenClasses(dummyToken)
 })
 
 describe('Test LocalStorageToken', () => {
-  const localStorageToken = new LocalStorageToken({})
+  const localStorageToken = new LocalStorageToken({
+    fetchRefreshToken: async () => ''
+  })
   testTokenClasses(localStorageToken)
 })
 
 describe('Test CookieToken', () => {
-  const cookieToken = new CookieToken({})
+  const cookieToken = new CookieToken({ fetchRefreshToken: async () => '' })
   testTokenClasses(cookieToken)
 })
