@@ -1,41 +1,22 @@
 import React from 'react'
-import CookieToken from '../Token/CookieToken'
-import { AuthContextInterface, AuthProviderProps } from '../interfaces'
-
-/**
- * The AuthContext that allow access to Token object and fetchRefreshToken method
- */
-const AuthContext = React.createContext<AuthContextInterface>({
-  token: new CookieToken({}),
-  fetchRefreshToken: () => new Promise<string>((resolve) => resolve(''))
-})
+import { AuthProviderProps } from '../interfaces'
+import { authReducer } from '../store/AuthReducer'
+import { AuthContextProvider } from './AuthContext'
 
 /**
  * The AuthProvider component that provide AuthContext to children
  * @param props AuthProviderProps
  */
-const AuthProvider: React.FunctionComponent<AuthProviderProps> = (
-  props: AuthProviderProps
-) => {
-  if (!props.tokenGenerator)
-    throw new Error('No tokenGenerator specified in AuthProvider')
+const AuthProvider: React.FunctionComponent<
+  React.PropsWithChildren<AuthProviderProps>
+> = (props: React.PropsWithChildren<AuthProviderProps>) => {
+  const authContextValue = React.useReducer(authReducer, props.token)
 
   return (
-    <AuthContext.Provider
-      value={{
-        token: props.tokenGenerator(),
-        fetchRefreshToken: props.fetchRefreshToken
-      }}
-    >
-      <React.Fragment>{props.children}</React.Fragment>
-    </AuthContext.Provider>
+    <AuthContextProvider value={authContextValue}>
+      {props.children}
+    </AuthContextProvider>
   )
 }
 
-AuthProvider.defaultProps = {
-  tokenGenerator: () => new CookieToken({})
-}
-
 export default AuthProvider
-const AuthContextConsumer = AuthContext.Consumer
-export { AuthContext, AuthContextConsumer }
